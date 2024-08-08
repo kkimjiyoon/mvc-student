@@ -58,6 +58,8 @@ public class FrontServlet extends HttpServlet {
             processingServlet = "/student/update";
         } else if ("/student/delete.do".equals(servletPath)) {
             processingServlet = "/student/delete";
+        } else if("/error.do".equals(servletPath)){
+            processingServlet = "/error";
         }
 
         return processingServlet;
