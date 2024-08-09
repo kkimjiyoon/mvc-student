@@ -1,4 +1,4 @@
-package com.nhnacademy.student;
+package com.nhnacademy.student.init;
 
 import com.nhnacademy.student.domain.Gender;
 import com.nhnacademy.student.domain.Student;
