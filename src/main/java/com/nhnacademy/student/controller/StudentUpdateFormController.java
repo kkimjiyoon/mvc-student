@@ -1,12 +1,13 @@
 package com.nhnacademy.student.controller;
 
-import com.nhnacademy.student.Command;
+import com.nhnacademy.student.annotation.RequestMapping;
 import com.nhnacademy.student.domain.Student;
 import com.nhnacademy.student.repository.StudentRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@RequestMapping(value = "/student/update.do", method = RequestMapping.Method.GET)
 public class StudentUpdateFormController implements Command {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {

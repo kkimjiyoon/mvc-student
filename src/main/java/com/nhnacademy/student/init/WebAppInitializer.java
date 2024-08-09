@@ -1,5 +1,7 @@
 package com.nhnacademy.student.init;
 
+import com.nhnacademy.student.ControllerFactory;
+import com.nhnacademy.student.controller.Command;
 import com.nhnacademy.student.domain.Gender;
 import com.nhnacademy.student.domain.Student;
 import com.nhnacademy.student.repository.MapStudentRepository;
@@ -8,9 +10,13 @@ import com.nhnacademy.student.repository.StudentRepository;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.HandlesTypes;
 import java.util.Random;
 import java.util.Set;
 
+@HandlesTypes(value = {
+        com.nhnacademy.student.controller.Command.class
+})
 public class WebAppInitializer implements ServletContainerInitializer {
     @Override
     public void onStartup(Set<Class<?>> set, ServletContext servletContext) throws ServletException {
@@ -26,6 +32,11 @@ public class WebAppInitializer implements ServletContainerInitializer {
             studentRepository.save(student);
         }
         servletContext.setAttribute("studentRepository", studentRepository);
+
+
+        ControllerFactory controllerFactory = new ControllerFactory();
+        controllerFactory.init(set);
+        servletContext.setAttribute("controllerFactory", controllerFactory);
     }
 
     public static Gender getRandomGender() {

@@ -1,7 +1,7 @@
 package com.nhnacademy.student.servlet;
 
-import com.nhnacademy.student.Command;
-import com.nhnacademy.student.controller.*;
+import com.nhnacademy.student.ControllerFactory;
+import com.nhnacademy.student.controller.Command;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.RequestDispatcher;
@@ -17,8 +17,13 @@ import static javax.servlet.RequestDispatcher.*;
 @Slf4j
 @WebServlet(name = "frontServlet", urlPatterns = "*.do")
 public class FrontServlet extends HttpServlet {
-
     private static final String REDIRECT_PREFIX = "redirect:";
+    private ControllerFactory controllerFactory;
+
+    @Override
+    public void init() throws ServletException {
+        controllerFactory = (ControllerFactory) getServletContext().getAttribute("controllerFactory");
+    }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -27,13 +32,7 @@ public class FrontServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // 실제 요청 처리할 servlet 을 결정
-//            String servletPath = resolveServlet(request.getServletPath());
-//            RequestDispatcher rd = request.getRequestDispatcher(servletPath);
-//            rd.include(request, response);
-
-            //todo 실제 로직을 처리할 Command(Controller) 결정, String view = command.execute() ...
-            Command command = resolveCommand(request.getServletPath(), request.getMethod());
+            Command command = (Command) controllerFactory.getBean(request.getMethod(), request.getServletPath());
             String view = command.execute(request, response);
             if (view.startsWith(REDIRECT_PREFIX)) {
                 String redirectUrl = view.substring(REDIRECT_PREFIX.length());
@@ -55,27 +54,5 @@ public class FrontServlet extends HttpServlet {
             RequestDispatcher rd = request.getRequestDispatcher("/error.jsp");
             rd.forward(request, response);
         }
-    }
-
-    private Command resolveCommand(String servletPath, String method){
-        Command command = null;
-        if("/student/list.do".equals(servletPath) && "GET".equalsIgnoreCase(method) ){
-            command = new StudentListController();
-        }else if("/student/view.do".equals(servletPath) && "GET".equalsIgnoreCase(method) ){
-            command = new StudentViewController();
-        }else if("/student/delete.do".equals(servletPath) && "POST".equalsIgnoreCase(method) ){
-            command = new StudentDeleteController();
-        }else if("/student/update.do".equals(servletPath) && "GET".equalsIgnoreCase(method) ){
-            command = new StudentUpdateFormController();
-        }else if("/student/update.do".equals(servletPath) && "POST".equalsIgnoreCase(method) ){
-            command = new StudentUpdateController();
-        }else if("/student/register.do".equals(servletPath) && "GET".equalsIgnoreCase(method) ){
-            command = new StudentRegisterFormController();
-        }else if("/student/register.do".equals(servletPath) && "POST".equalsIgnoreCase(method) ){
-            command = new StudentRegisterController();
-        }else if("/error.do".equals(servletPath)){
-            command = new ErrorController();
-        }
-        return command;
     }
 }
